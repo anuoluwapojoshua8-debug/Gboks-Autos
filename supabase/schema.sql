@@ -97,6 +97,26 @@ create table if not exists newsletter_subscribers (
   created_at timestamptz default now()
 );
 
+-- Step 9b: team roster edited from the admin dashboard.
+create table if not exists team_members (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  role text not null,
+  detail text not null default '',
+  initials text not null default '',
+  tint text not null default 'bg-[#E1F3FE] text-[#1F6C9F]',
+  sort_order int not null default 0,
+  active boolean not null default true,
+  created_at timestamptz default now()
+);
+
+insert into team_members (name, role, detail, initials, tint, sort_order) values
+ ('Adaeze Okonkwo','Head of diagnostics','Engine, ECU and electrical faults.','AO','bg-[#E1F3FE] text-[#1F6C9F]',1),
+ ('Tunde Bakare','Lead mechanic','Servicing, brakes and suspension.','TB','bg-[#EDF3EC] text-[#346538]',2),
+ ('Emeka Nwosu','AC and cooling specialist','AC, radiator and overheating.','EN','bg-[#FBF3DB] text-[#956400]',3),
+ ('Aisha Bello','Service advisor','Bookings, quotes and updates.','AB','bg-[#FDEBEC] text-[#9F2F2D]',4)
+on conflict do nothing;
+
 -- Storage buckets (create in Dashboard > Storage):
 --   booking-photos (public read off, authed write) — customer car problem photos
 --   complaint-attachments — complaint evidence

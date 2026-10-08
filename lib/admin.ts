@@ -153,6 +153,74 @@ export async function toggleSlot(id: string, active: boolean): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export type AdminService = {
+  slug: string;
+  title: string;
+  description: string;
+  duration: string;
+  price_from: string;
+  active: boolean;
+};
+
+export type AdminTeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  detail: string;
+  initials: string;
+  tint: string;
+  sort_order: number;
+  active: boolean;
+};
+
+export async function fetchServicesAdmin(): Promise<AdminService[]> {
+  const sb = required();
+  const { data, error } = await sb.from("services")
+    .select("slug,title,description,duration,price_from,active").order("title");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AdminService[];
+}
+
+export async function updateService(slug: string, patch: Partial<Pick<AdminService, "title" | "description" | "duration" | "price_from" | "active">>): Promise<void> {
+  const sb = required();
+  const { error } = await sb.from("services").update(patch).eq("slug", slug);
+  if (error) throw new Error(error.message);
+}
+
+export async function createService(row: { slug: string; title: string; description: string; duration: string; price_from: string }): Promise<void> {
+  const sb = required();
+  const { error } = await sb.from("services").insert({ ...row, active: true });
+  if (error) throw new Error(error.code === "23505" ? "That URL slug is taken. Use another." : error.message);
+}
+
+export async function fetchTeamAdmin(): Promise<AdminTeamMember[]> {
+  const sb = required();
+  const { data, error } = await sb.from("team_members")
+    .select("id,name,role,detail,initials,tint,sort_order,active").order("sort_order");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AdminTeamMember[];
+}
+
+export async function updateTeamMember(id: string, patch: Partial<Pick<AdminTeamMember, "name" | "role" | "detail" | "initials" | "tint" | "sort_order" | "active">>): Promise<void> {
+  const sb = required();
+  const { error } = await sb.from("team_members").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function createTeamMember(row: { name: string; role: string; detail: string; initials: string; tint: string }): Promise<void> {
+  const sb = required();
+  const { data } = await sb.from("team_members").select("sort_order").order("sort_order", { ascending: false }).limit(1);
+  const next = ((data?.[0]?.sort_order as number) ?? 0) + 1;
+  const { error } = await sb.from("team_members").insert({ ...row, sort_order: next, active: true });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteTeamMember(id: string): Promise<void> {
+  const sb = required();
+  const { error } = await sb.from("team_members").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 // Client-side CSV download. Works for any row type.
 export function downloadCSV(filename: string, rows: Record<string, unknown>[]) {
   if (rows.length === 0) return;

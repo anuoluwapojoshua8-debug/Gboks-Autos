@@ -7,7 +7,8 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Counter } from "@/components/Counter";
 import { Reveal } from "@/components/Reveal";
 import { CtaBanner } from "@/components/home/Sections";
-import { CEO, CERTS, STATS, TEAM } from "@/lib/demo-data";
+import { CEO, CERTS, STATS } from "@/lib/demo-data";
+import type { TeamMember } from "@/lib/team";
 
 // Client island: renders Phosphor icons (module-scope hooks, no RSC).
 const VALUES = [
@@ -16,7 +17,7 @@ const VALUES = [
   { icon: Target, tile: "bg-[#E1F3FE] text-[#1F6C9F]", title: "Done right, done fast", text: "Same-day turnaround on most jobs, and we road-test before handover." },
 ];
 
-export function AboutBody() {
+export function AboutBody({ team }: { team: TeamMember[] }) {
   return (
     <>
       {/* Page hero: light editorial, serif headline */}
@@ -177,7 +178,7 @@ export function AboutBody() {
           <SectionHeading kicker="The crew" title="Technicians you will actually meet" sub="Specialists by bay, ask for them by name, not by fine print." />
           <Reveal>
           <div id="team-h" className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {TEAM.map((m, k) => (
+            {team.map((m, k) => (
               <div key={m.role} className={`card card-hover text-left ${k % 2 === 1 ? "lg:translate-y-4" : ""}`}>
                 <div aria-hidden className={`grid h-16 w-16 place-items-center rounded-xl font-display text-lg font-bold ${m.tint}`}>
                   {m.initials}

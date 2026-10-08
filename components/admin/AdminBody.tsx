@@ -5,28 +5,38 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowSquareOut, DownloadSimple, Envelope } from "@phosphor-icons/react";
 import { supabase } from "@/lib/supabase";
 import {
+  createService,
+  createTeamMember,
+  deleteTeamMember,
   downloadCSV,
   fetchBookings,
   fetchComplaints,
   fetchQuotes,
   fetchReviews,
+  fetchServicesAdmin,
   fetchSlots,
   fetchSubscribers,
+  fetchTeamAdmin,
   getRole,
   resolveComplaint,
   setBookingStatus,
   setReviewApproved,
   toggleSlot,
   updateQuote,
+  updateService,
+  updateTeamMember,
   type AdminBooking,
   type AdminComplaint,
   type AdminQuote,
   type AdminReview,
+  type AdminService,
   type AdminSlot,
+  type AdminTeamMember,
 } from "@/lib/admin";
+import { TEAM_TINTS } from "@/lib/team";
 import { cn } from "@/lib/cn";
 
-const TABS = ["Bookings", "Complaints", "Quotes", "Reviews", "Subscribers", "Slots"] as const;
+const TABS = ["Bookings", "Complaints", "Quotes", "Reviews", "Services", "Team", "Subscribers", "Slots"] as const;
 type Tab = (typeof TABS)[number];
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -61,8 +71,15 @@ export function AdminBody() {
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [subs, setSubs] = useState<{ email: string; created_at: string }[]>([]);
   const [slots, setSlots] = useState<AdminSlot[]>([]);
+  const [servicesAdmin, setServicesAdmin] = useState<AdminService[]>([]);
+  const [teamAdmin, setTeamAdmin] = useState<AdminTeamMember[]>([]);
   const [reply, setReply] = useState<Record<string, string>>({});
   const [est, setEst] = useState<Record<string, { lo: string; hi: string }>>({});
+  const [svcEdits, setSvcEdits] = useState<Record<string, Partial<AdminService>>>({});
+  const [newSvc, setNewSvc] = useState({ slug: "", title: "", description: "", duration: "", price_from: "" });
+  const [memberEdits, setMemberEdits] = useState<Record<string, Partial<AdminTeamMember>>>({});
+  const [newMember, setNewMember] = useState({ name: "", role: "", detail: "", tint: TEAM_TINTS[0] });
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
@@ -75,13 +92,15 @@ export function AdminBody() {
     setLoading(true);
     setError("");
     try {
-      const [b, c, q, r, s, sl] = await Promise.all([
+      const [b, c, q, r, s, sl, sv, tm] = await Promise.all([
         fetchBookings().catch(() => [] as AdminBooking[]),
         fetchComplaints().catch(() => [] as AdminComplaint[]),
         fetchQuotes().catch(() => [] as AdminQuote[]),
         fetchReviews().catch(() => [] as AdminReview[]),
         fetchSubscribers().catch(() => [] as { email: string; created_at: string }[]),
         fetchSlots().catch(() => [] as AdminSlot[]),
+        fetchServicesAdmin().catch(() => [] as AdminService[]),
+        fetchTeamAdmin().catch(() => [] as AdminTeamMember[]),
       ]);
       setBookings(b);
       setComplaints(c);
@@ -89,6 +108,8 @@ export function AdminBody() {
       setReviews(r);
       setSubs(s);
       setSlots(sl);
+      setServicesAdmin(sv);
+      setTeamAdmin(tm);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load.");
     } finally {
@@ -160,7 +181,7 @@ export function AdminBody() {
     );
   }
 
-  const counts = { Bookings: bookings.length, Complaints: complaints.filter((c) => c.status !== "resolved").length, Quotes: quotes.filter((q) => q.status === "received").length, Reviews: reviews.filter((r) => !r.approved).length, Subscribers: subs.length, Slots: slots.filter((s) => s.active).length };
+  const counts = { Bookings: bookings.length, Complaints: complaints.filter((c) => c.status !== "resolved").length, Quotes: quotes.filter((q) => q.status === "received").length, Reviews: reviews.filter((r) => !r.approved).length, Services: servicesAdmin.filter((s) => s.active).length, Team: teamAdmin.filter((m) => m.active).length, Subscribers: subs.length, Slots: slots.filter((s) => s.active).length };
 
   return (
     <section className="section-pad">
@@ -312,6 +333,140 @@ export function AdminBody() {
                 {reviews.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-sm text-[#787774]">No reviews submitted yet.</td></tr>}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!loading && tab === "Services" && (
+          <div className="mt-4 space-y-4">
+            <div className="flex justify-end">
+              <button onClick={() => downloadCSV("services.csv", servicesAdmin)} className="inline-flex items-center gap-1.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 text-xs font-semibold transition hover:bg-[#F9F9F8] active:scale-[0.98] dark:border-white/10 dark:bg-charcoal-900"><DownloadSimple size={14} weight="bold" /> CSV</button>
+            </div>
+            {servicesAdmin.map((s) => {
+              const ed = svcEdits[s.slug] ?? {};
+              const dirty = Object.keys(ed).length > 0;
+              const set = (p: Partial<AdminService>) => setSvcEdits((prev) => ({ ...prev, [s.slug]: { ...prev[s.slug], ...p } }));
+              return (
+                <div key={s.slug} className="card">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="tnum font-mono text-sm font-bold">{s.slug}</span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={async () => {
+                        try { await updateService(s.slug, { active: !s.active }); setServicesAdmin((prev) => prev.map((x) => x.slug === s.slug ? { ...x, active: !x.active } : x)); }
+                        catch (err) { setError(err instanceof Error ? err.message : "Update failed."); }
+                      }} aria-pressed={s.active}
+                        className={cn("rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-[0.98]", s.active ? "bg-[#EDF3EC] text-[#346538]" : "border border-[#EAEAEA] dark:border-white/10")}>
+                        {s.active ? "Live" : "Hidden"}
+                      </button>
+                      <button disabled={!dirty} onClick={async () => {
+                        try { await updateService(s.slug, ed); setServicesAdmin((prev) => prev.map((x) => x.slug === s.slug ? { ...x, ...ed } : x)); setSvcEdits((prev) => { const n = { ...prev }; delete n[s.slug]; return n; }); }
+                        catch (err) { setError(err instanceof Error ? err.message : "Save failed."); }
+                      }} className="btn-primary !min-h-[36px] !px-4 !py-1.5 !text-xs disabled:opacity-40">Save</button>
+                    </div>
+                  </div>
+                  <div className="tnum mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    <label className="block text-xs text-[#787774]">Title<input value={ed.title ?? s.title} onChange={(e) => set({ title: e.target.value })} className={inputCls + " mt-1 w-full"} aria-label={`Title for ${s.slug}`} /></label>
+                    <label className="block text-xs text-[#787774]">Starting price<input value={ed.price_from ?? s.price_from} onChange={(e) => setSvcEdits((prev) => ({ ...prev, [s.slug]: { ...prev[s.slug], price_from: e.target.value } }))} className={inputCls + " tnum mt-1 w-full"} aria-label={`Price for ${s.slug}`} /></label>
+                    <label className="block text-xs text-[#787774]">Duration<input value={ed.duration ?? s.duration} onChange={(e) => setSvcEdits((prev) => ({ ...prev, [s.slug]: { ...prev[s.slug], duration: e.target.value } }))} className={inputCls + " tnum mt-1 w-full"} aria-label={`Duration for ${s.slug}`} /></label>
+                    <label className="block text-xs text-[#787774] sm:col-span-2 lg:col-span-1">Blurb<input value={ed.description ?? s.description} onChange={(e) => setSvcEdits((prev) => ({ ...prev, [s.slug]: { ...prev[s.slug], description: e.target.value } }))} className={inputCls + " mt-1 w-full"} aria-label={`Description for ${s.slug}`} /></label>
+                  </div>
+                </div>
+              );
+            })}
+            <form className="card" onSubmit={async (e) => {
+              e.preventDefault();
+              setError("");
+              const slug = newSvc.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+              if (!slug || !newSvc.title.trim() || !newSvc.price_from.trim()) return setError("New service needs a slug, title and price.");
+              try {
+                await createService({ slug, title: newSvc.title.trim(), description: newSvc.description.trim(), duration: newSvc.duration.trim() || "Quote", price_from: newSvc.price_from.trim() });
+                setServicesAdmin((prev) => [...prev, { slug, title: newSvc.title.trim(), description: newSvc.description.trim(), duration: newSvc.duration.trim() || "Quote", price_from: newSvc.price_from.trim(), active: true }]);
+                setNewSvc({ slug: "", title: "", description: "", duration: "", price_from: "" });
+              } catch (err) { setError(err instanceof Error ? err.message : "Create failed."); }
+            }}>
+              <h2 className="font-display font-semibold text-[#111111] dark:text-white">Add a service</h2>
+              <div className="tnum mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                <input value={newSvc.slug} onChange={(e) => setNewSvc({ ...newSvc, slug: e.target.value })} placeholder="slug-like-this" aria-label="New service slug" className={inputCls} />
+                <input value={newSvc.title} onChange={(e) => setNewSvc({ ...newSvc, title: e.target.value })} placeholder="Title" aria-label="New service title" className={inputCls} />
+                <input value={newSvc.price_from} onChange={(e) => setNewSvc({ ...newSvc, price_from: e.target.value })} placeholder="₦25,000" aria-label="New service price" className={inputCls} />
+                <input value={newSvc.duration} onChange={(e) => setNewSvc({ ...newSvc, duration: e.target.value })} placeholder="2-4 hrs" aria-label="New service duration" className={inputCls} />
+                <input value={newSvc.description} onChange={(e) => setNewSvc({ ...newSvc, description: e.target.value })} placeholder="One-line blurb" aria-label="New service blurb" className={inputCls} />
+              </div>
+              <button type="submit" className="btn-primary mt-3 !min-h-[44px] !px-4 !py-2 !text-sm">Add service</button>
+            </form>
+          </div>
+        )}
+
+        {!loading && tab === "Team" && (
+          <div className="mt-4 space-y-4">
+            {teamAdmin.map((m) => {
+              const ed = memberEdits[m.id] ?? {};
+              const dirty = Object.keys(ed).length > 0;
+              const set = (p: Partial<AdminTeamMember>) => setMemberEdits((prev) => ({ ...prev, [m.id]: { ...prev[m.id], ...p } }));
+              return (
+                <div key={m.id} className="card">
+                  <div className="flex items-center gap-3">
+                    <span aria-hidden className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl font-display text-sm font-bold ${ed.tint ?? m.tint}`}>
+                      {ed.initials ?? m.initials}
+                    </span>
+                    <div className="grid flex-1 gap-2 sm:grid-cols-2">
+                      <input value={ed.name ?? m.name} onChange={(e) => set({ name: e.target.value })} aria-label={`Name for ${m.name}`} className={inputCls} />
+                      <input value={ed.role ?? m.role} onChange={(e) => set({ role: e.target.value })} aria-label={`Role for ${m.name}`} className={inputCls} />
+                    </div>
+                  </div>
+                  <input value={ed.detail ?? m.detail} onChange={(e) => set({ detail: e.target.value })} aria-label={`Detail for ${m.name}`} className={inputCls + " mt-2 w-full"} />
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <div className="flex gap-1.5" role="radiogroup" aria-label={`Tile color for ${m.name}`}>
+                      {TEAM_TINTS.map((t) => (
+                        <button key={t} type="button" role="radio" aria-checked={(ed.tint ?? m.tint) === t} aria-label={`Tile ${TEAM_TINTS.indexOf(t) + 1}`}
+                          onClick={() => set({ tint: t })}
+                          className={cn("grid h-9 w-9 place-items-center rounded-lg font-display text-xs font-bold transition active:scale-[0.95]", t, (ed.tint ?? m.tint) === t && "ring-2 ring-[#111111] ring-offset-2 dark:ring-white")}>
+                          {(ed.initials ?? m.initials).slice(0, 1)}
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={async () => {
+                      try { await updateTeamMember(m.id, { active: !m.active }); setTeamAdmin((prev) => prev.map((x) => x.id === m.id ? { ...x, active: !x.active } : x)); }
+                      catch (err) { setError(err instanceof Error ? err.message : "Update failed."); }
+                    }} aria-pressed={m.active}
+                      className={cn("rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-[0.98]", m.active ? "bg-[#EDF3EC] text-[#346538]" : "border border-[#EAEAEA] dark:border-white/10")}>
+                      {m.active ? "Shown" : "Hidden"}
+                    </button>
+                    <button disabled={!dirty} onClick={async () => {
+                      try { await updateTeamMember(m.id, ed); setTeamAdmin((prev) => prev.map((x) => x.id === m.id ? { ...x, ...ed } : x)); setMemberEdits((prev) => { const n = { ...prev }; delete n[m.id]; return n; }); }
+                      catch (err) { setError(err instanceof Error ? err.message : "Save failed."); }
+                    }} className="btn-primary !min-h-[36px] !px-4 !py-1.5 !text-xs disabled:opacity-40">Save</button>
+                    {confirmDelete === m.id ? (
+                      <button onClick={async () => {
+                        try { await deleteTeamMember(m.id); setTeamAdmin((prev) => prev.filter((x) => x.id !== m.id)); setConfirmDelete(null); }
+                        catch (err) { setError(err instanceof Error ? err.message : "Delete failed."); }
+                      }} className="rounded-md bg-[#9F2F2D] px-3 py-1.5 text-xs font-semibold text-white active:scale-[0.98]">Confirm remove</button>
+                    ) : (
+                      <button onClick={() => setConfirmDelete(m.id)} className="rounded-md border border-[#EAEAEA] px-3 py-1.5 text-xs font-semibold transition hover:bg-[#FDEBEC] active:scale-[0.98] dark:border-white/10">Remove</button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            <form className="card" onSubmit={async (e) => {
+              e.preventDefault();
+              setError("");
+              if (newMember.name.trim().length < 2 || !newMember.role.trim()) return setError("New member needs a name and role.");
+              const initials = newMember.name.trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+              try {
+                await createTeamMember({ name: newMember.name.trim(), role: newMember.role.trim(), detail: newMember.detail.trim(), initials, tint: newMember.tint });
+                const fresh = await fetchTeamAdmin();
+                setTeamAdmin(fresh);
+                setNewMember({ name: "", role: "", detail: "", tint: TEAM_TINTS[0] });
+              } catch (err) { setError(err instanceof Error ? err.message : "Create failed."); }
+            }}>
+              <h2 className="font-display font-semibold text-[#111111] dark:text-white">Add a crew member</h2>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <input value={newMember.name} onChange={(e) => setNewMember({ ...newMember, name: e.target.value })} placeholder="Full name" aria-label="New member name" className={inputCls} />
+                <input value={newMember.role} onChange={(e) => setNewMember({ ...newMember, role: e.target.value })} placeholder="Role, e.g. Brake specialist" aria-label="New member role" className={inputCls} />
+                <input value={newMember.detail} onChange={(e) => setNewMember({ ...newMember, detail: e.target.value })} placeholder="What they handle" aria-label="New member detail" className={inputCls} />
+              </div>
+              <button type="submit" className="btn-primary mt-3 !min-h-[44px] !px-4 !py-2 !text-sm">Add member</button>
+            </form>
           </div>
         )}
 
