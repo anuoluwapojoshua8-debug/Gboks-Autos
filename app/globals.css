@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base: warm monochrome document aesthetic, mobile-first */
+@layer base {
+  :root {
+    --font-display: "SF Pro Display", "Helvetica Neue", "Switzer", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-serif: "Newsreader", "Lyon Text", "Playfair Display", "Instrument Serif", Georgia, "Times New Roman", serif;
+    --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-[#F7F6F3] font-sans text-[#2F3437] antialiased dark:bg-charcoal-950 dark:text-neutral-100;
+    text-rendering: optimizeLegibility;
+    background-image: radial-gradient(60% 32rem at 50% 0%, rgba(180, 160, 120, 0.05), transparent 70%);
+  }
+  .dark body {
+    background-image: none;
+  }
+  /* Editorial serif reserved for hero headings + quotes */
+  .serif-display {
+    @apply font-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  h1, h2, h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  p, blockquote {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: #111111;
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 3px solid #111111;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Tabular figures for prices, stats, counters */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* SHAPE LOCK: standard cards 12px (rounded-xl), feature panels 12px,
+     primary CTAs 6px (rounded-md), tags/badges full pills, kbd 4px.
+     Avatars/squircles 12px. No other radii.
+     Z-SCALE: 50 header bar / whatsapp, 60 grain, 70 menu overlay,
+     100 skip link. Nothing else sets z-index. */
+  .container-x {
+    @apply mx-auto w-full max-w-shell px-4 sm:px-6 lg:px-8;
+  }
+  /* Primary CTA: solid #111, white text, 6px radius, no shadow.
+     Hover shifts to #333; press scales to 0.98. */
+  .btn-primary {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-md bg-[#111111] px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-[#333333] active:scale-[0.98] dark:bg-white dark:text-[#111111] dark:hover:bg-neutral-200;
+  }
+  .btn-outline {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-md border border-[#2F3437]/25 px-6 py-3 text-base font-semibold text-[#2F3437] transition-all duration-200 hover:border-[#111111] hover:bg-[#111111] hover:text-white active:scale-[0.98] dark:border-white/25 dark:text-white dark:hover:border-white dark:hover:bg-white dark:hover:text-charcoal-950;
+  }
+  /* Tertiary link: quiet charcoal underline, no button noise */
+  .link-more {
+    @apply inline-flex items-center gap-1 text-sm font-semibold text-[#2F3437] underline underline-offset-4 transition hover:text-[#111111] dark:text-neutral-200 dark:hover:text-white;
+  }
+  /* Flat document card: 1px hairline, 12px radius, generous padding,
+     zero shadow. Interactive cards add .card-hover for the whisper lift. */
+  .card {
+    @apply rounded-xl border border-[#EAEAEA] bg-white p-6 dark:border-white/10 dark:bg-charcoal-900;
+  }
+  .card-flat {
+    @apply rounded-xl bg-[#F9F9F8] p-6 dark:bg-white/[0.05];
+  }
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-px;
+  }
+  .card-hover:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  /* Pastel tag: pill, tiny uppercase type, washed-out fill per spec */
+  .tag {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.05em];
+  }
+  .tag-yellow { @apply bg-[#FBF3DB] text-[#956400]; }
+  .tag-red { @apply bg-[#FDEBEC] text-[#9F2F2D]; }
+  .tag-blue { @apply bg-[#E1F3FE] text-[#1F6C9F]; }
+  .tag-green { @apply bg-[#EDF3EC] text-[#346538]; }
+  .dark .tag-yellow { @apply bg-white/10 text-amber-200/90; }
+  .dark .tag-red { @apply bg-white/10 text-red-200/90; }
+  .dark .tag-blue { @apply bg-white/10 text-sky-200/90; }
+  .dark .tag-green { @apply bg-white/10 text-emerald-200/90; }
+  /* Macro-whitespace: airy sections, optically larger bottom */
+  .section-pad {
+    @apply pb-24 pt-24 sm:pb-28 sm:pt-28 lg:pb-36 lg:pt-32;
+  }
+  /* Eyebrow tag: microscopic pastel pill above major headings.
+     Rationed: max 1 per 3 sections. Never enumerate, never decorate. */
+  .kicker {
+    @apply tag tag-yellow;
+  }
+  .img-ph {
+    /* Flat warm placeholder until workshop photos land. No gradients. */
+    @apply relative flex items-center justify-center overflow-hidden bg-[#E8E6E1] text-center text-sm font-medium text-[#6B6660];
+  }
+  /* Desaturated warm photography: blends picsum shots into the palette */
+  .photo-warm {
+    filter: saturate(0.72) sepia(0.14);
+  }
+  /* Fixed film-grain overlay: breaks digital flatness. Fixed layer only,
+     never on scrolling containers (mobile GPU). */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+  /* Quiet entry: 12px fade over 600ms. Hero load only; below-fold uses
+     the Reveal component (IntersectionObserver). Stagger in 80ms steps. */
+  .reveal {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .reveal-1 { animation-delay: 0.08s; }
+  .reveal-2 { animation-delay: 0.16s; }
+  .reveal-3 { animation-delay: 0.24s; }
+  .reveal-4 { animation-delay: 0.32s; }
+  /* Skeleton loading: flat warm pulse. No gradients per protocol. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-xl bg-[#E8E6E1] dark:bg-white/10;
+    animation: skeleton-pulse 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  /* Ambient depth: single slow-drifting warm spot for hero sections.
+     Fixed layer, pointer-events none, opacity 0.03. Never on scrollers. */
+  .ambient-blob {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: radial-gradient(28rem 28rem at 20% 12%, #b4a078, transparent 70%);
+    animation: ambient-drift 24s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @keyframes ambient-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(4rem, 2rem, 0); }
+  }
+  /* Minimal geometric line texture for section depth. Hairlines only. */
+  .rule-lines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent 0 31px,
+      rgba(0, 0, 0, 0.035) 31px 32px
+    );
+  }
+  /* Reduced motion: all choreography collapses to static. Non-negotiable. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-1, .reveal-2, .reveal-3, .reveal-4 {
+      animation: none;
+    }
+    .skeleton, .ambient-blob {
+      animation: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
