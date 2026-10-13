@@ -43,8 +43,8 @@ export function Hero() {
           <figure className="overflow-hidden rounded-xl border border-[#EAEAEA] bg-white dark:border-white/10 dark:bg-charcoal-900">
             <div className="relative aspect-[16/10]">
               <Image
-                src="https://picsum.photos/seed/gboks-bay/1200/750"
-                alt="Mechanics servicing a car inside the GBOKS workshop"
+                src="/images/sections/home-hero-bay.jpg"
+                alt="Smiling mechanic in overalls inside the workshop"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 45vw"

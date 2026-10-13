@@ -60,8 +60,8 @@ export function CtaBanner() {
         <Reveal>
         <div className="relative overflow-hidden rounded-xl bg-[#111111] text-white">
           <Image
-            src="https://picsum.photos/seed/gboks-road/1600/700"
-            alt="Car on a Lagos road at dusk"
+            src="/images/sections/cta-road-dusk.jpg"
+            alt="Cars on a bridge road at dusk"
             fill
             loading="lazy"
             sizes="100vw"

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: "GBOKS AUTOS - Auto Repair & Servicing in Lagos",
     description: SITE.tagline,
-    images: [{ url: "https://picsum.photos/seed/gboks-workshop/1200/630", width: 1200, height: 630 }],
+    images: [{ url: "/images/og/workshop-og.jpg", width: 1200, height: 630, alt: "Cars parked at the GBOKS AUTOS workshop" }],
   },
   robots: { index: true, follow: true },
 };

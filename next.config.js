@@ -1,14 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    // Placeholder imagery: picsum seeds until real workshop photos land.
-    // Tighten domains when real photos are hosted.
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "picsum.photos" },
-    ],
-  },
+  // All site imagery is local in /public/images. Re-add remotePatterns
+  // only if an external host (e.g. Supabase Storage) feeds next/image.
 };
 
 module.exports = nextConfig;

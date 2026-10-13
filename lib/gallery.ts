@@ -10,19 +10,19 @@ export type GalleryImage = {
 };
 
 const DEMO_GALLERY: GalleryImage[] = [
-  { src: "https://picsum.photos/seed/gboks-bay/1400/900", caption: "Morning lineup in the Ikeja bay", tag: "workshop", alt: "Cars parked inside the GBOKS workshop bay" },
-  { src: "https://picsum.photos/seed/gboks-lift/900/1100", caption: "Underbody check on the lift", tag: "repairs", alt: "Car raised on a lift for underbody inspection" },
-  { src: "https://picsum.photos/seed/gboks-engine/900/700", caption: "Full service: fluids, filters, 40-point check", tag: "repairs", alt: "Technician servicing a car engine" },
-  { src: "https://picsum.photos/seed/gboks-diag/900/700", caption: "Dealer-level diagnostics before any quote", tag: "workshop", alt: "Diagnostic scanner plugged into a car" },
-  { src: "https://picsum.photos/seed/gboks-brake/900/1100", caption: "Brake discs skimmed, pads renewed", tag: "repairs", alt: "Close view of a brake disc and caliper" },
-  { src: "https://picsum.photos/seed/gboks-ac/900/700", caption: "AC regas, tested cold before handover", tag: "repairs", alt: "Technician servicing car air conditioning" },
-  { src: "https://picsum.photos/seed/gboks-team/1400/900", caption: "The crew that signs off your road test", tag: "team", alt: "Workshop technicians standing by a serviced car" },
-  { src: "https://picsum.photos/seed/gboks-paint/900/700", caption: "Panel beating and oven-baked spray", tag: "repairs", alt: "Car body work in the paint booth" },
-  { src: "https://picsum.photos/seed/gboks-road/900/1100", caption: "Road-tested on Allen Avenue before pickup", tag: "workshop", alt: "Car on a Lagos road after service" },
+  { src: "/images/gallery/workshop-bay-lineup.jpg", caption: "Morning lineup in the Ikeja bay", tag: "workshop", alt: "Classic cars lined up in a row" },
+  { src: "/images/gallery/car-on-lift-inspection.jpg", caption: "Underbody check on the lift", tag: "repairs", alt: "Hydraulic lift controls inside a workshop bay" },
+  { src: "/images/gallery/engine-service.jpg", caption: "Full service: fluids, filters, 40-point check", tag: "repairs", alt: "V8 engine and running gear close-up" },
+  { src: "/images/gallery/diagnostics-obd-scan.jpg", caption: "Dealer-level diagnostics before any quote", tag: "workshop", alt: "OBD-II diagnostic port under a car dashboard" },
+  { src: "/images/gallery/brake-disc-caliper.jpg", caption: "Brake discs skimmed, pads renewed", tag: "repairs", alt: "Worn brake disc and caliper during replacement" },
+  { src: "/images/gallery/ac-service-gauges.jpg", caption: "AC regas, tested cold before handover", tag: "repairs", alt: "Car dashboard with air vents and climate controls" },
+  { src: "/images/gallery/crew-workshop-team.jpg", caption: "The crew that signs off your road test", tag: "team", alt: "Two mechanics working on an engine" },
+  { src: "/images/gallery/paint-spray-booth.jpg", caption: "Panel beating and oven-baked spray", tag: "repairs", alt: "Bare-metal project car at a restoration shop" },
+  { src: "/images/gallery/road-test-drive.jpg", caption: "Road-tested on Allen Avenue before pickup", tag: "workshop", alt: "Driver point of view on a highway with traffic" },
 ];
 
-// Public gallery: live Storage bucket rows first, curated demo seeds
-// until real workshop photos are uploaded to the bucket.
+// Public gallery: live Storage bucket rows first, curated local workshop
+// photos until real GBOKS photos are uploaded to the bucket.
 export async function listGallery(): Promise<{ images: GalleryImage[]; live: boolean }> {
   if (!supabase) return { images: DEMO_GALLERY, live: false };
   try {

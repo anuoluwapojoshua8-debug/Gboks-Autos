@@ -45,8 +45,8 @@ export function AboutBody({ team }: { team: TeamMember[] }) {
           <figure className="overflow-hidden rounded-xl border border-[#EAEAEA] bg-white dark:border-white/10 dark:bg-charcoal-900">
             <div className="relative aspect-[4/3]">
               <Image
-                src="https://picsum.photos/seed/gboks-story/1200/900"
-                alt="Technician inspecting an engine inside the workshop"
+                src="/images/sections/about-story-bay.jpg"
+                alt="Mechanic's hands working on a car engine"
                 fill
                 loading="lazy"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -139,8 +139,8 @@ export function AboutBody({ team }: { team: TeamMember[] }) {
             <figure className="overflow-hidden rounded-xl border border-[#EAEAEA] bg-white dark:border-white/10 dark:bg-charcoal-900">
               <div className="relative aspect-[3/4]">
                 <Image
-                  src="https://picsum.photos/seed/gboks-ceo/560/750"
-                  alt="Portrait of the GBOKS AUTOS founder"
+                  src="/images/sections/about-founder-portrait.jpg"
+                  alt="African mechanic working on a car wheel"
                   fill
                   loading="lazy"
                   sizes="(max-width: 1024px) 100vw, 280px"
@@ -148,7 +148,7 @@ export function AboutBody({ team }: { team: TeamMember[] }) {
                 />
               </div>
               <figcaption className="border-t border-[#EAEAEA] px-4 py-2.5 text-xs text-[#787774] dark:border-white/10 dark:text-neutral-400">
-                {CEO.name} • {CEO.title}, photo placeholder
+                {CEO.name} • {CEO.title}
               </figcaption>
             </figure>
             <div className="card">
