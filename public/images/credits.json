@@ -18,13 +18,13 @@
   "query": "car lift"
  },
  "gallery/engine-service.jpg": {
-  "title": "Honda ST1100 engine closeup",
-  "creator": "Gisela Giardino",
-  "license": "by-sa",
-  "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
-  "source": "https://commons.wikimedia.org/w/index.php?curid=5146780",
-  "direct": "https://upload.wikimedia.org/wikipedia/commons/8/89/Honda_ST1100_engine_closeup.jpg",
-  "query": "engine closeup"
+  "title": "BMW Engine",
+  "creator": "MyLifeStory",
+  "license": "by",
+  "license_url": "https://creativecommons.org/licenses/by/2.0/",
+  "source": "https://www.flickr.com/photos/88758808@N00/527844080",
+  "direct": "https://live.staticflickr.com/1038/527844080_a2af0c9b36_b.jpg",
+  "query": "bmw engine"
  },
  "gallery/diagnostics-obd-scan.jpg": {
   "title": "Engine diagnostic connector",
@@ -36,13 +36,13 @@
   "query": "engine diagnostics"
  },
  "gallery/brake-disc-caliper.jpg": {
-  "title": "Examining brakes car will take",
-  "creator": "libraryofcongress",
-  "license": "cc0",
-  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
-  "source": "https://www.rawpixel.com/image/12170973/image-person-art-vintage",
-  "direct": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvbG9jMjAxNzc0MDQ5NS1pbWFnZS5qcGc.jpg",
-  "query": "brakes car"
+  "title": "step 1",
+  "creator": "Robert Couse-Baker",
+  "license": "by",
+  "license_url": "https://creativecommons.org/licenses/by/2.0/",
+  "source": "https://www.flickr.com/photos/29233640@N07/3285711469",
+  "direct": "https://live.staticflickr.com/3555/3285711469_041786c608_b.jpg",
+  "query": "rotor brake"
  },
  "gallery/ac-service-gauges.jpg": {
   "title": "Car interior, steering wheel photo",
@@ -99,13 +99,13 @@
   "query": "traffic sunset"
  },
  "sections/about-story-bay.jpg": {
-  "title": "No Known Restrictions: Woman Changing Tire at 1916 Car Race, Washington, D.C. by National Photo Co. (LOC)",
-  "creator": "pingnews.com",
-  "license": "pdm",
-  "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
-  "source": "https://www.flickr.com/photos/39735679@N00/484569387",
-  "direct": "https://live.staticflickr.com/171/484569387_7385bde656_b.jpg",
-  "query": "changing tire"
+  "title": "Changing a Tire",
+  "creator": "waitscm",
+  "license": "by",
+  "license_url": "https://creativecommons.org/licenses/by/2.0/",
+  "source": "https://www.flickr.com/photos/78341140@N00/6236313929",
+  "direct": "https://live.staticflickr.com/6095/6236313929_3a49fec97a_b.jpg",
+  "query": "flat tire change"
  },
  "sections/about-founder-portrait.jpg": {
   "title": "African mechanic",
