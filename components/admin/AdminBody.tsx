@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowSquareOut, DownloadSimple, Envelope } from "@phosphor-icons/react";
+import { DownloadSimple, Envelope } from "@phosphor-icons/react";
 import { supabase } from "@/lib/supabase";
 import {
   createService,
@@ -513,10 +513,7 @@ export function AdminBody() {
           </div>
         )}
 
-        <p className="mt-6 flex items-center gap-1 text-xs text-[#787774] dark:text-neutral-500">
-          Production note: add RLS so only admins read these tables.
-          <a href="https://supabase.com/docs/guides/auth/row-level-security" target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 underline underline-offset-2">RLS guide <ArrowSquareOut size={12} weight="bold" /></a>
-        </p>
+
       </div>
     </section>
   );
