@@ -1,5 +1,5 @@
 -- GBOKS AUTOS — Supabase schema (run in SQL editor, Step 2+).
--- No online payments: payment_status iseya local only (unpaid | paid_onsite).
+-- No online payments: payment_status isiy local only (unpaid | paid_onsite).
 
 create table if not exists services (
   id uuid primary key default gen_random_uuid(),
@@ -110,38 +110,7 @@ create table if not exists team_members (
   created_at timestamptz default now()
 );
 
-insert into team_members (name, role, detail, initials, tint, sort_order) values
- ('Adaeze Okonkwo','Head of diagnostics','Engine, ECU and electrical faults.','AO','bg-[#E1F3FE] text-[#1F6C9F]',1),
- ('Tunde Bakare','Lead mechanic','Servicing, brakes and suspension.','TB','bg-[#EDF3EC] text-[#346538]',2),
- ('Emeka Nwosu','AC and cooling specialist','AC, radiator and overheating.','EN','bg-[#FBF3DB] text-[#956400]',3),
- ('Aisha Bello','Service advisor','Bookings, quotes and updates.','AB','bg-[#FDEBEC] text-[#9F2F2D]',4)
-on conflict do nothing;
-
 -- Storage buckets (create in Dashboard > Storage):
 --   booking-photos (public read off, authed write) — customer car problem photos
 --   complaint-attachments — complaint evidence
 --   gallery — before/after + workshop images (public read on)
-
--- Default weekly windows: Mon-Fri 4 slots, Sat 2, Sun closed.
--- Weekday follows Postgres EXTRACT(DOW): 0 Sunday … 6 Saturday.
-insert into time_slots (weekday, start_time, end_time, capacity) values
- (1,'08:00','10:00',2),(1,'10:00','12:00',2),(1,'13:00','15:00',2),(1,'15:00','17:00',2),
- (2,'08:00','10:00',2),(2,'10:00','12:00',2),(2,'13:00','15:00',2),(2,'15:00','17:00',2),
- (3,'08:00','10:00',2),(3,'10:00','12:00',2),(3,'13:00','15:00',2),(3,'15:00','17:00',2),
- (4,'08:00','10:00',2),(4,'10:00','12:00',2),(4,'13:00','15:00',2),(4,'15:00','17:00',2),
- (5,'08:00','10:00',2),(5,'10:00','12:00',2),(5,'13:00','15:00',2),(5,'15:00','17:00',2),
- (6,'09:00','12:00',2),(6,'12:00','15:00',2)
-on conflict do nothing;
-
--- Seed core services (mirrors lib/demo-data.ts fallback):
-insert into services (slug, title, description, duration, price_from) values
- ('general-servicing','General Servicing','Full inspection, fluids, filters & 40-point check.','2-4 hrs','₦25,000'),
- ('engine-diagnostics','Engine Diagnostics','Dealer-level OBD scan & repair plan.','45-90 min','₦10,000'),
- ('brake-repair','Brake Repair','Pads, discs, calipers & ABS.','1-3 hrs','₦15,000'),
- ('suspension','Suspension & Steering','Shocks, bushings, tie-rods.','2-5 hrs','₦20,000'),
- ('ac-repair','AC Repair & Regas','Leak test, compressor & regas.','1-2 hrs','₦12,000'),
- ('electrical','Auto Electrical','Battery, alternator, starter & wiring.','1-3 hrs','₦8,000'),
- ('tire-alignment','Tires & Alignment','Fitting, balancing & 3D alignment.','45-90 min','₦7,500'),
- ('oil-change','Oil Change','Quality oil + OEM filter.','~45 min','₦18,000'),
- ('body-work','Body Work & Paint','Dent removal & oven-baked spray.','1-5 days','Quote')
-on conflict (slug) do nothing;
